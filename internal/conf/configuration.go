@@ -499,6 +499,7 @@ type SmsProviderConfiguration struct {
 	Messagebird  MessagebirdProviderConfiguration  `json:"messagebird"`
 	Textlocal    TextlocalProviderConfiguration    `json:"textlocal"`
 	Vonage       VonageProviderConfiguration       `json:"vonage"`
+	Aliyun       AliyunProviderConfiguration       `json:"aliyun"`
 }
 
 func (c *SmsProviderConfiguration) GetTestOTP(phone string, now time.Time) (string, bool) {
@@ -1230,4 +1231,29 @@ func (t *VonageProviderConfiguration) Validate() error {
 
 func (t *SmsProviderConfiguration) IsTwilioVerifyProvider() bool {
 	return t.Provider == "twilio_verify"
+}
+
+type AliyunProviderConfiguration struct {
+	AccessKeyId     string `json:"access_key_id" split_words:"true"`
+	AccessKeySecret string `json:"access_key_secret" split_words:"true"`
+	Endpoint        string `json:"endpoint" split_words:"true"`
+	SignName        string `json:"sign_name" split_words:"true"`
+	SmsUpExtendCode string `json:"sms_up_extend_code" split_words:"true"`
+}
+
+func (t *AliyunProviderConfiguration) Validate() error {
+	if t.AccessKeyId == "" {
+		return errors.New("missing Aliyun Access Key ID")
+	}
+	if t.AccessKeySecret == "" {
+		return errors.New("missing Aliyun Access Key Secret")
+	}
+	if t.Endpoint == "" {
+		t.Endpoint = "https://dysmsapi.aliyuncs.com"
+	}
+	if t.SignName == "" {
+		return errors.New("missing Aliyun Sign Name")
+	}
+
+	return nil
 }
